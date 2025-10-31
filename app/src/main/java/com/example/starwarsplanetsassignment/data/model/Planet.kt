@@ -1,7 +1,10 @@
 package com.example.starwarsplanetsassignment.data.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Planet (
   @SerializedName("name"            ) var name           : String?           = null,
   @SerializedName("rotation_period" ) var rotationPeriod : String?           = null,
@@ -16,4 +19,4 @@ data class Planet (
   @SerializedName("films"           ) var films          : ArrayList<String> = arrayListOf(),
   @SerializedName("created"         ) var created        : String?           = null,
   @SerializedName("edited"          ) var edited         : String?           = null,
-  @SerializedName("url"             ) var url            : String?           = null)
+  @SerializedName("url"             ) var url            : String?           = null) : Parcelable
