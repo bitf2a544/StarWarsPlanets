@@ -4,5 +4,5 @@ network-security-config added for security
 minify & shrinkresource enable true for small apk size and security
 base urls store as build config field
 Dependecy injection implemented usinh hilt
-viewmodel repositry pattren added
+Model viewmodel repositry pattren implemented
 
