@@ -1,7 +1,6 @@
 package com.example.starwarsplanetsassignment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,6 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.starwarsplanetsassignment.data.model.Planet
 import com.example.starwarsplanetsassignment.databinding.FragmentPlanetDetailBinding
-import com.google.gson.Gson
 
 class PlanetDetailFragment : Fragment() {
 
@@ -29,20 +27,23 @@ class PlanetDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val selectedPlanet: Planet = arguments?.getParcelable(arg) ?: Planet()
-        Log.i("selectedPlanet", "Gson=" + Gson().toJson(selectedPlanet))
 
         mBinding.planetNameTV.text = getString(R.string.planet_name, selectedPlanet.name.toString())
         mBinding.orbitalPeriodTV.text =
-            getString(R.string.planet_name, selectedPlanet.orbitalPeriod.toString())
-        mBinding.gravityTV.text = getString(R.string.planet_name, selectedPlanet.gravity.toString())
+            getString(R.string.planet_orbital, selectedPlanet.orbitalPeriod.toString())
+        mBinding.gravityTV.text =
+            getString(R.string.planet_gravity, selectedPlanet.gravity.toString())
 
+        loadImage()
 
+    }
+
+    fun loadImage() {
         Glide.with(mBinding.root.context)
-            .load("https://picsum.photos/200")
+            .load(BuildConfig.BASE_IMAGE_URL + "200")
             .placeholder(R.drawable.baseline_error_24) // optional
             .error(R.drawable.ic_error_24)             // shows if load fails
             .into(mBinding.planetImage)
-
     }
 
     companion object {

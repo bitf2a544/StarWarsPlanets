@@ -1,5 +1,6 @@
 package com.example.starwarsplanetsassignment.data.repositry
 
+import com.example.starwarsplanetsassignment.BuildConfig
 import com.example.starwarsplanetsassignment.data.model.PlanetsResponse
 import com.example.starwarsplanetsassignment.data.network.ApiService
 import retrofit2.Retrofit
@@ -9,7 +10,7 @@ class PlanetRepository {
 
     private val api: ApiService by lazy {
         Retrofit.Builder()
-            .baseUrl("https://swapi.dev/api/")
+            .baseUrl(BuildConfig.API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)

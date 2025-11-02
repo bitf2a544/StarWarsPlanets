@@ -3,6 +3,7 @@ package com.example.starwarsplanetsassignment
 import android.os.Bundle
 import android.util.Log
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -25,13 +26,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.starwarsplanetsassignment.ui.theme.StarWarsPlanetsAssignmentTheme
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-
+import  com.example.starwarsplanetsassignment.data.utils.isInternetAvailable
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -44,14 +44,22 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.starwarsplanetsassignment.ui.viewmodel.PlanetViewModel
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.fragment.app.FragmentActivity
@@ -69,7 +77,6 @@ class MainActivity : FragmentActivity() {
                 PlanetMainScreen(viewModel)
             }
         }
-
     }
 }
 
@@ -80,7 +87,7 @@ fun PlanetMainScreen(viewModel: PlanetViewModel) {
     val activity = LocalContext.current as FragmentActivity
     val FRAGMENT_CONTAINER_ID = 0x1001
 
-    // Listen for fragment back navigation (Keep this logic)
+    // Fragment back navigation
     DisposableEffect(activity.supportFragmentManager) {
         val listener = FragmentManager.OnBackStackChangedListener {
             if (activity.supportFragmentManager.backStackEntryCount == 0) {
@@ -98,18 +105,44 @@ fun PlanetMainScreen(viewModel: PlanetViewModel) {
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Planets",
-                        modifier = Modifier.height(20.dp),
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontSize = 20.sp // Example: Set text size to 22 Scaled Pixels
+                    if (selectedPlanet != null) {
+                        Text(
+                            text = stringResource(R.string.planet_detail),
+                            modifier = Modifier.height(30.dp),
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontSize = 20.sp
+                            )
                         )
-                    )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.planets),
+                            modifier = Modifier.height(30.dp),
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontSize = 20.sp
+                            )
+                        )
+                    }
                 },
-                // ✅ ADD THIS BLOCK
+                // Show back button only when a planet is selected
+                navigationIcon = {
+                    if (selectedPlanet != null) {
+                        IconButton(
+                            onClick = {
+                                activity.supportFragmentManager.popBackStack()
+                                selectedPlanet = null
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary, // Set the background color here
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary // Optional: set title color for contrast
+                    containerColor = colorResource(R.color.primary_color),
+                    titleContentColor = colorResource(R.color.white)
                 )
 
             )
@@ -118,7 +151,6 @@ fun PlanetMainScreen(viewModel: PlanetViewModel) {
         // Use a Box to stack the List and the Fragment container
         Box(
             modifier = Modifier
-                //.padding(top = 50.dp, bottom = 50.dp)
                 .fillMaxSize()
         ) {
             AndroidView(
@@ -127,7 +159,6 @@ fun PlanetMainScreen(viewModel: PlanetViewModel) {
                     // Only display the fragment container when a planet is selected.
                     .alpha(if (selectedPlanet != null) 1f else 0f)
                     .zIndex(if (selectedPlanet != null) 1f else 0f),// Ensure it is on top
-                // .key("fragmentContainer"), // Key ensures stability of the underlying FrameLayout
                 factory = { context ->
                     // This factory runs only once on initial composition/first use.
                     FrameLayout(context).apply {
@@ -144,15 +175,14 @@ fun PlanetMainScreen(viewModel: PlanetViewModel) {
             )
 
 
-            // 2. The List (Only show when no planet is selected)
+            // The Planets List (Only show when no planet is selected)
             if (selectedPlanet == null) {
-                PlanetListingScreen(viewModel) { planetObj ->
-                    // 3. On click: Set state and immediately start the transaction
+                PlanetListingScreen(viewModel, Modifier.padding(innerPadding)) { planetObj ->
                     selectedPlanet = planetObj
 
                     activity.supportFragmentManager.beginTransaction()
                         .replace(
-                            FRAGMENT_CONTAINER_ID, // Use the ID of the stable FrameLayout above
+                            FRAGMENT_CONTAINER_ID,
                             PlanetDetailFragment.newInstance(planetObj)
                         )
                         .addToBackStack(null)
@@ -165,28 +195,39 @@ fun PlanetMainScreen(viewModel: PlanetViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlanetListingScreen(viewModel: PlanetViewModel, onPlanetClick: (Planet) -> Unit) {
+fun PlanetListingScreen(
+    viewModel: PlanetViewModel,
+    modifier: Modifier,
+    onPlanetClick: (Planet) -> Unit
+) {
     val planets by viewModel.planets.collectAsState()
     val loading by viewModel.loading.collectAsState()
+    val context = LocalContext.current
 
     // Fetch planets when the screen first loads
     LaunchedEffect(Unit) {
         if (viewModel.planets.value.isEmpty()) {
-            viewModel.fetchPlanets()
+            if (context.isInternetAvailable())
+                viewModel.fetchPlanets()
+            else
+                Toast.makeText(context, "Network Not available", Toast.LENGTH_LONG).show()
         }
     }
     Box(
-        modifier = Modifier
-            .padding(top = 80.dp, bottom = 40.dp)
+        modifier = modifier
+            .padding(bottom = 40.dp)
             .wrapContentHeight()
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(2.dp),
         contentAlignment = Alignment.Center
     ) {
         when {
             loading -> CircularProgressIndicator()
 
-            planets.isEmpty() -> Text("No planets found")
+            planets.isEmpty() -> Text(
+                "No planets found",
+                modifier = Modifier.padding(top = 50.dp)
+            )
 
             else -> LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -211,7 +252,7 @@ fun PlanetListingScreen(viewModel: PlanetViewModel, onPlanetClick: (Planet) -> U
                         ) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data("https://picsum.photos/200") // 🌐 Random Picsum image
+                                    .data(BuildConfig.BASE_IMAGE_URL + "200") // 🌐 Random Picsum image
                                     .crossfade(true)
                                     .build(),
                                 contentDescription = "Planet Image",
