@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-parcelize")
+    alias(libs.plugins.hilt)
+    kotlin("kapt")
 }
 
 android {
@@ -71,6 +73,9 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")   // or whichever version you choose
   //  kapt("com.github.bumptech.glide:compiler:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    implementation("com.google.dagger:hilt-android:2.52")
+    kapt("com.google.dagger:hilt-compiler:2.52")
 
     // ✅ Change this
     implementation(libs.androidx.core.ktx)
