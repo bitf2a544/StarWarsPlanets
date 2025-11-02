@@ -1,27 +1,12 @@
 package com.example.starwarsplanetsassignment.data.repositry
 
-import com.example.starwarsplanetsassignment.BuildConfig
 import com.example.starwarsplanetsassignment.data.model.PlanetsResponse
 import com.example.starwarsplanetsassignment.data.network.ApiService
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import jakarta.inject.Inject
 
-class PlanetRepository {
-
-    private val api: ApiService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BuildConfig.API_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ApiService::class.java)
-    }
-
+class PlanetRepository @Inject constructor(private val api: ApiService) {
     suspend fun getPlanetsFromNetworkAPI(): PlanetsResponse? {
         val response = api.getPlanets()
-        return if (response.isSuccessful)
-            response.body()
-        else
-            null
+        return if (response.isSuccessful) response.body() else null
     }
-
 }
