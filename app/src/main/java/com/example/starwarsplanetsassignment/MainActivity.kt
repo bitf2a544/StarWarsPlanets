@@ -66,9 +66,13 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.compose.ui.unit.sp
 import com.example.starwarsplanetsassignment.data.model.Planet
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : FragmentActivity() {
+
     private val viewModel by viewModels<PlanetViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -215,7 +219,7 @@ fun PlanetListingScreen(
     }
     Box(
         modifier = modifier
-            .padding(bottom = 40.dp)
+            .padding(bottom = 5.dp)
             .wrapContentHeight()
             .fillMaxWidth()
             .padding(2.dp),
@@ -250,9 +254,11 @@ fun PlanetListingScreen(
                                 .fillMaxWidth()
                                 .padding(10.dp)
                         ) {
+                            var url = BuildConfig.BASE_IMAGE_URL + "id/237/200/200"
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(BuildConfig.BASE_IMAGE_URL + "200") // 🌐 Random Picsum image
+                                    .data(url) // 🌐 Random Picsum image
+                                    .size(80)
                                     .crossfade(true)
                                     .build(),
                                 contentDescription = "Planet Image",

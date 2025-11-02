@@ -6,12 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/darker_gray"
-    android:padding="110dp">
+    android:paddingTop="120dp"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/planetImage"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="250dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.starwarsplanetsassignment.data.model.Planet
 import com.example.starwarsplanetsassignment.databinding.FragmentPlanetDetailBinding
 
@@ -39,10 +40,14 @@ class PlanetDetailFragment : Fragment() {
     }
 
     fun loadImage() {
+         var url = BuildConfig.BASE_IMAGE_URL + "id/237/200/200"
+
         Glide.with(mBinding.root.context)
-            .load(BuildConfig.BASE_IMAGE_URL + "200")
-            .placeholder(R.drawable.baseline_error_24) // optional
-            .error(R.drawable.ic_error_24)             // shows if load fails
+            .load(url)
+             .override(250, 250) // 👈 forces Glide to resize to 200x200 instead of full image
+            .diskCacheStrategy(DiskCacheStrategy.ALL) // 👈 caches both original & resized
+            .placeholder(R.drawable.baseline_error_24) // use lightweight image here
+            .error(R.drawable.ic_error_24)
             .into(mBinding.planetImage)
     }
 
