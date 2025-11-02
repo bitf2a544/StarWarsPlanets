@@ -1,4 +1,4 @@
-package com.example.starwarsplanetsassignment
+package com.example.starwarsplanetsassignment.ui.activity
 
 import android.os.Bundle
 import android.util.Log
@@ -65,6 +65,9 @@ import androidx.compose.ui.zIndex
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.compose.ui.unit.sp
+import com.example.starwarsplanetsassignment.BuildConfig
+import com.example.starwarsplanetsassignment.ui.fragment.PlanetDetailFragment
+import com.example.starwarsplanetsassignment.R
 import com.example.starwarsplanetsassignment.data.model.Planet
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -187,7 +190,7 @@ fun PlanetMainScreen(viewModel: PlanetViewModel) {
                     activity.supportFragmentManager.beginTransaction()
                         .replace(
                             FRAGMENT_CONTAINER_ID,
-                            PlanetDetailFragment.newInstance(planetObj)
+                            PlanetDetailFragment.Companion.newInstance(planetObj)
                         )
                         .addToBackStack(null)
                         .commit()

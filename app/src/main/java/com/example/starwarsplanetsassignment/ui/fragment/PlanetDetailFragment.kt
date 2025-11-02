@@ -1,4 +1,4 @@
-package com.example.starwarsplanetsassignment
+package com.example.starwarsplanetsassignment.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.starwarsplanetsassignment.BuildConfig
+import com.example.starwarsplanetsassignment.R
 import com.example.starwarsplanetsassignment.data.model.Planet
 import com.example.starwarsplanetsassignment.databinding.FragmentPlanetDetailBinding
 
